@@ -4,29 +4,34 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
 
     class Program
     {
         static void Main(string[] args)
         {
-            var f = new LinkedLangFileParser(
-             new LangFileParser(
-                 new StopWordsParser(),
-                 new SynonymsParser(),
-                 new TranslationSetParser(
-                     new TranslationParser(),
-                     new LinkedDataParser(new List<PrefixOnlyParser<LinkedData>>
-                     {
-                            new WikidataParser(),
-                            new WikidataCategoryParser(),
-                            new WikipediaCategoryParser(),
-                            new PnnsGroupParser(1),
-                            new PnnsGroupParser(2)
-                     })))).Parse(@"d:\\categories.txt");
-            f.WriteToAsync(Console.Out).Wait();
-            using (var o = new StreamWriter(@"d:\\categories2.txt"))
+            using (var stream = new FileStream(@"d:\\categories.txt", FileMode.Open, FileAccess.Read, FileShare.None, 1, true))
             {
-                f.WriteToAsync(o).Wait();
+                var f = new LinkedLangFileParser(
+                    new LangFileParser(
+                        new StopWordsParser(),
+                        new SynonymsParser(),
+                        new TranslationSetParser(
+                            new TranslationParser(),
+                            new LinkedDataParser(new List<PrefixOnlyParser<LinkedData>>
+                            {
+                                new WikidataParser(),
+                                new WikidataCategoryParser(),
+                                new WikipediaCategoryParser(),
+                                new PnnsGroupParser(1),
+                                new PnnsGroupParser(2),
+                                new CountryParser()
+                            })))).Parse(stream, Encoding.UTF8);
+                f.WriteToAsync(Console.Out).Wait();
+                using (var o = new StreamWriter(@"d:\\categories2.txt"))
+                {
+                    f.WriteToAsync(o).Wait();
+                }
             }
         }
     }

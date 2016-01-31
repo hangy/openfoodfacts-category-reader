@@ -28,7 +28,8 @@
                                 new CountryParser(),
                                 new RegionParser(),
                                 new InstanceOfParser(),
-                                new GrapeVarietyParser()
+                                new GrapeVarietyParser(),
+                                new LabelParser()
                          })))).Parse(stream, Encoding.UTF8);
                 f.WriteToAsync(Console.Out).Wait();
                 using (var o = new StreamWriter(@"d:\\categories2.txt"))
